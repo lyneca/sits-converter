@@ -17,7 +17,8 @@
     "csvtojson": "^2.0.8",
     "electron-prebuilt": "^1.4.13",
     "eslint": "^5.8.0",
-    "node-excel-export": "^1.4.4"
+    "node-excel-export": "^1.4.4",
+    "read-excel-file": "^2.0.5"
   },
   "devDependencies": {
     "electron": "^3.0.8"

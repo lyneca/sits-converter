@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="style.css" type="text/css" rel="stylesheet">
+    <title>Canvas to SITS Converter</title>
+</head>
+
+<body>
+    <div class="title">Canvas to SITS converter</div>
+    <div class="intro">
+        Drag your files into the boxes below to begin.
+    </div>
+    <div class="container" id="file-input-csv">
+        CANVAS
+    </div>
+    <div class="container" id="file-input-sits">
+        SITS
+    </div>
+    <script>
+        const { dialog } = require('electron').remote
+        // Set up file drag-and-drop
+        var csvInput = document.getElementById('file-input-csv');
+        var sitsInput = document.getElementById('file-input-sits');
+
+        csvInput.ondragover  = () => {csvInput.classList.add("dragover");    return false};
+        csvInput.ondragleave = () => {csvInput.classList.remove("dragover"); return false};
+        csvInput.ondragend   = () => {csvInput.classList.remove("dragover"); return false};
+
+        sitsInput.ondragover  = () => {sitsInput.classList.add("dragover");    return false};
+        sitsInput.ondragleave = () => {sitsInput.classList.remove("dragover"); return false};
+        sitsInput.ondragend   = () => {sitsInput.classList.remove("dragover"); return false};
+
+        csvInput.ondrop = (e) => {
+            e.preventDefault();
+            csvInput.classList.remove("dragover")
+            csvFile = e.dataTransfer.files[0].path;
+            return false;
+        };
+        sitsInput.ondrop = (e) => {
+            e.preventDefault();
+            sitsInput.classList.remove("dragover")
+            sitsFile = e.dataTransfer.files[0].path;
+            return false;
+        };
+
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>

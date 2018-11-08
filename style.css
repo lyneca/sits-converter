@@ -1,0 +1,45 @@
+body {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: white;
+    display: grid;
+    grid-template-rows: 50px 20px 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    padding: 20px;
+}
+
+div.title {
+    font-size: 40px;
+    text-align: center;
+    color: skyblue;
+    grid-column: span 2;
+}
+
+div.intro {
+    text-align: center;
+    grid-column: span 2;
+}
+
+div.container {
+    width: 100%;
+    padding: 30px 0 30px 0;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 72px;
+    color: #dddddd;
+    border: 5px dashed transparent;
+    transition: border-color 0.1s ease-in-out, color 0.1s ease-in-out;
+    border-radius: 5px;
+    background-color: #eeeeee;
+}
+
+span.input-text {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+
+div.container.dragover {
+    border-color: skyblue;
+    color: #cccccc;
+}

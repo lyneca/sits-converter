@@ -36,7 +36,9 @@ function process() {
         readXLSX(sitsFile).then((excelLines) => {
             excelLines.shift();
             output = exportXSLX(combine(jsonObj, excelLines));
-            fs.writeFile("/Users/tut012/Documents/git/sits-converter/output.xlsx", output, (err) => {
+            var outputPath = dialog.showSaveDialog();
+            if (!outputPath) return;
+            fs.writeFile(outputPath, output, (err) => {
                 if (err) throw err;
                 console.log("Saved as output.xlsx");
             });

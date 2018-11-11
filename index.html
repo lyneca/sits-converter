@@ -107,7 +107,6 @@
             function visualHandler(element, fileName) {
                 element.classList.remove("dragover")
                 element.classList.add("uploaded");
-                console.log(element);
                 element.children[0].children[0].textContent = "Success! File upload complete.";
                 element.children[0].children[1].textContent = fileName.replace(/^.*[\\\/]/, '');
             }
@@ -119,25 +118,31 @@
             csvInput.onclick = function() {
                 if (isDisabled(this)) return false;
                 var tmp = dialog.showOpenDialog({
-                    multiSelections: false
+                    filters: [
+                        {name: 'CSV Files', extensions: ['csv']}
+                    ],
+                    properties: ['multiSelections', 'openFile']
                 });
                 if (tmp) {
-                    csvFile = tmp;
+                    csvFile = tmp[0];
                     visualHandler(csvInput, csvFile)
+                    enableStep(2);
                 }
-                enableStep(2);
             };
 
             sitsInput.onclick = function() {
                 if (isDisabled(this)) return false;
                 var tmp = dialog.showOpenDialog({
-                    multiSelections: false
+                    filters: [
+                        {name: 'Excel Spreadsheets', extensions: ['xls', 'xlsx']}
+                    ],
+                    properties: ['multiSelections']
                 });
                 if (tmp) {
-                    sitsFile = tmp;
+                    sitsFile = tmp[0];
                     visualHandler(sitsInput, sitsFile)
+                    enableStep(3);
                 }
-                enableStep(3);
             };
 
             button.onclick = () => {

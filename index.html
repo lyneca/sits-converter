@@ -153,6 +153,8 @@
             }
 
             function reset() {
+                csvFile = null;
+                sitsFile = null;
                 disableStep(2);
                 disableStep(3);
                 csvInput.children[0].children[0].textContent = "Drag the file straight into this box";

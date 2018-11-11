@@ -14,6 +14,18 @@ function getGrade(mark) {
     return "HD"
 }
 
+function disableStep(step) {
+    var stepElement = document.getElementById("step-" + step);
+    stepElement.classList.add("disabled");
+}
+
+function enableStep(step) {
+    var stepElement = document.getElementById("step-" + step);
+    stepElement.classList.remove("disabled");
+    console.log(step);
+    if (step < 3) stepElement.children[1].children[0].children[0].textContent = "Drag the file straight into this box"
+}
+
 function getName(name) {
     return name.replace(',', '').toUpperCase();
 }
@@ -26,8 +38,8 @@ function readXLSX(path) {
     return readXlsxFile(path);
 }
 
-function process() {
-    console.log(specification);
+function process(csvFile, sitsFile) {
+    if (!csvFile.endsWith('.csv'));
     readCSV(csvFile).then((jsonObj) => {
         jsonObj.shift();
         jsonObj = jsonObj.filter((student) => {
@@ -40,7 +52,6 @@ function process() {
             if (!outputPath) return;
             fs.writeFile(outputPath, output, (err) => {
                 if (err) throw err;
-                console.log("Saved as output.xlsx");
             });
         })
     });

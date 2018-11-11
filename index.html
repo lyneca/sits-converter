@@ -10,79 +10,157 @@
 </head>
 
 <body>
-    <div class="cover" id="cover">
-        <div class="cover-title">Files merged!</div>
-        <div class="button" id="save-button">Save</div>
+    <div class="title">
+        <div class="title-text">
+        Ratification Documentation Preparation Utility
+        </div>
+        <img class="usyd-logo" src="usyd-logo.png" alt="The University of Sydney">
     </div>
-    <div class="title">Canvas to SITS converter</div>
-    <div class="intro">
-        Click or drag files into the boxes below to begin.
-    </div>
-    <div class="container" id="file-input-csv">
-        CANVAS
-    </div>
-    <div class="container" id="file-input-sits">
-        SITS
-    </div>
-    <div class="button" id="merge-button">
-        Merge
-    </div>
-    <script>
-        const { dialog } = require('electron').remote
-        // Set up file drag-and-drop
-        var csvInput = document.getElementById('file-input-csv');
-        var sitsInput = document.getElementById('file-input-sits');
-        var button = document.getElementById('merge-button');
+    <div class="container">
+        <div class="step" id="step-1">
+            <div class="step-instructions">
+                <div class="step-number">1</div>
+                <div class="main-instruction">
+                    Upload Files from Canvas
+                </div>
+                <div class="sub-instruction">
+                    This is the exported .csv file from the marking center
+                </div>
+            </div>
+            <div class="upload-box" id="file-input-csv">
+                <div class="upload-box-text">
+                    <!--<div class="upload-icon">IN</div>-->
+                    <div class="upload-status none-uploaded">
+                        Drag the file straight into this box
+                    </div>
+                    <div class="upload-file"></div>
+                </div>
+            </div>
+        </div>
+        <div class="step" id="step-2">
+            <div class="step-instructions">
+                <div class="step-number">2</div>
+                <div class="main-instruction">
+                    Upload Files from SITS
+                </div>
+                <div class="sub-instruction">
+                    This is the exported .xls file from the student center
+                </div>
+            </div>
+            <div class="upload-box" id="file-input-sits">
+                <div class="upload-box-text">
+                    <!--<div class="upload-icon">IN</div>-->
+                    <div class="upload-status none-uploaded">
+                        Drag the file straight into this box
+                    </div>
+                    <div class="upload-file"></div>
+                </div>
+            </div>
+        </div>
+        <div class="step" id="step-3">
+            <div class="step-instructions">
+                <div class="step-number">3</div>
+                <div class="main-instruction">
+                    Download & Save Merged File
+                </div>
+            </div>
+            <div class="button" id="merge-button">
+                Merge
+            </div>
+        </div>
 
-        csvInput.ondragover  = () => {csvInput.classList.add("dragover");    return false};
-        csvInput.ondragleave = () => {csvInput.classList.remove("dragover"); return false};
-        csvInput.ondragend   = () => {csvInput.classList.remove("dragover"); return false};
+        <script>
+            const { dialog } = require('electron').remote
+            // Set up file drag-and-drop
+            var csvInput = document.getElementById('file-input-csv');
+            var sitsInput = document.getElementById('file-input-sits');
+            var button = document.getElementById('merge-button');
 
-        sitsInput.ondragover  = () => {sitsInput.classList.add("dragover");    return false};
-        sitsInput.ondragleave = () => {sitsInput.classList.remove("dragover"); return false};
-        sitsInput.ondragend   = () => {sitsInput.classList.remove("dragover"); return false};
+            csvInput.ondragover = () => { csvInput.classList.add("dragover"); return false };
+            csvInput.ondragleave = () => { csvInput.classList.remove("dragover"); return false };
+            csvInput.ondragend = () => { csvInput.classList.remove("dragover"); return false };
 
-        csvInput.ondrop = (e) => {
-            e.preventDefault();
-            csvInput.classList.remove("dragover")
-            csvFile = e.dataTransfer.files[0].path;
-            csvInput.classList.add("uploaded");
-            return false;
-        };
-        sitsInput.ondrop = (e) => {
-            e.preventDefault();
-            sitsInput.classList.remove("dragover")
-            sitsFile = e.dataTransfer.files[0].path;
-            sitsInput.classList.add("uploaded");
-            return false;
-        };
+            sitsInput.ondragover = () => { sitsInput.classList.add("dragover"); return false };
+            sitsInput.ondragleave = () => { sitsInput.classList.remove("dragover"); return false };
+            sitsInput.ondragend = () => { sitsInput.classList.remove("dragover"); return false };
 
-        csvInput.onclick = () => {
-            var tmp = dialog.showOpenDialog({
-                multiSelections: false
-            });
-            if (tmp) {
-                csvFile = tmp;
-                csvInput.classList.add("uploaded");
+            csvInput.ondrop = function(e) {
+                e.preventDefault();
+                this.classList.remove("dragover");
+                if (isDisabled(this)) return false;
+                csvFile = e.dataTransfer.files[0].path;
+                visualHandler(this, csvFile)
+                enableStep(2);
+                return false;
+            };
+
+            sitsInput.ondrop = function(e) {
+                e.preventDefault();
+                this.classList.remove("dragover");
+                if (isDisabled(this)) return false;
+                sitsFile = e.dataTransfer.files[0].path;
+                visualHandler(this, sitsFile)
+                enableStep(3);
+                return false;
+            };
+
+            function visualHandler(element, fileName) {
+                element.classList.remove("dragover")
+                element.classList.add("uploaded");
+                console.log(element);
+                element.children[0].children[0].textContent = "Success! File upload complete.";
+                element.children[0].children[1].textContent = fileName.replace(/^.*[\\\/]/, '');
             }
-        };
 
-        sitsInput.onclick = () => {
-            var tmp = dialog.showOpenDialog({
-                multiSelections: false
-            });
-            if (tmp) {
-                sitsFile = tmp;
-                sitsInput.classList.add("uploaded");
+            function isDisabled(element) {
+                return element.parentElement.classList.contains("disabled");
             }
-        };
-        button.onclick = () => {
-            sitsInput.classList.remove("uploaded");
-            csvInput.classList.remove("uploaded");
-            if (csvFile && sitsFile) process();
-        }
-    </script>
-    <script src="script.js"></script>
-</body>
 
+            csvInput.onclick = function() {
+                if (isDisabled(this)) return false;
+                var tmp = dialog.showOpenDialog({
+                    multiSelections: false
+                });
+                if (tmp) {
+                    csvFile = tmp;
+                    visualHandler(csvInput, csvFile)
+                }
+                enableStep(2);
+            };
+
+            sitsInput.onclick = function() {
+                if (isDisabled(this)) return false;
+                var tmp = dialog.showOpenDialog({
+                    multiSelections: false
+                });
+                if (tmp) {
+                    sitsFile = tmp;
+                    visualHandler(sitsInput, sitsFile)
+                }
+                enableStep(3);
+            };
+
+            button.onclick = () => {
+                sitsInput.classList.remove("uploaded");
+                csvInput.classList.remove("uploaded");
+                if (csvFile && sitsFile) process(csvFile, sitsFile);
+                reset();
+            }
+
+            function reset() {
+                disableStep(2);
+                disableStep(3);
+                csvInput.children[0].children[0].textContent = "Drag the file straight into this box";
+                csvInput.children[0].children[1].textContent = "No file uploaded";
+                sitsInput.children[0].children[0].textContent = "Complete the above step first";
+                sitsInput.children[0].children[1].textContent = "No file uploaded";
+                console.log(sitsInput);
+            }
+            </script>
+        <script src="script.js"></script>
+        <script>
+            reset();
+        </script>
+        </div>
+        </body>
 </html>

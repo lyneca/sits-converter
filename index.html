@@ -134,9 +134,9 @@
                 if (isDisabled(this)) return false;
                 var tmp = dialog.showOpenDialog({
                     filters: [
-                        {name: 'Excel Spreadsheets', extensions: ['xls', 'xlsx']}
+                        {name: 'Excel Spreadsheets', extensions: ['xlsx', 'xls']}
                     ],
-                    properties: ['multiSelections']
+                    properties: ['multiSelections', 'openFile']
                 });
                 if (tmp) {
                     sitsFile = tmp[0];

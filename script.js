@@ -48,7 +48,11 @@ function process(csvFile, sitsFile) {
         readXLSX(sitsFile).then((excelLines) => {
             excelLines.shift();
             output = exportXSLX(combine(jsonObj, excelLines));
-            var outputPath = dialog.showSaveDialog();
+            var outputPath = dialog.showSaveDialog({
+                filters: [
+                    { name: 'Excel Spreadsheets', extensions: ['xlsx'] }
+                ],
+            });
             if (!outputPath) return;
             fs.writeFile(outputPath, output, (err) => {
                 if (err) throw err;

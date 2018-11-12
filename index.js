@@ -8,7 +8,7 @@ let win;
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 550, height: 700 });
+  win = new BrowserWindow({ width: 460, height: 525 });
   win.setResizable(false);
 
   // and load the index.html of the app.

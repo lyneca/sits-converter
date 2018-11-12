@@ -1,6 +1,6 @@
 {
   "name": "sits-converter",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Convert Canvas marks to SITS format",
   "main": "index.js",
   "scripts": {

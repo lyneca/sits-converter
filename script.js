@@ -22,8 +22,7 @@ function disableStep(step) {
 function enableStep(step) {
     var stepElement = document.getElementById("step-" + step);
     stepElement.classList.remove("disabled");
-    console.log(step);
-    if (step < 3) stepElement.children[1].children[0].children[0].textContent = "Drag the file straight into this box"
+    if (step < 3) stepElement.children[1].children[0].children[1].textContent = "Drag the file straight into this box"
 }
 
 function getName(name) {

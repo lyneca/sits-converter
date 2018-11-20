@@ -35,7 +35,7 @@
                     </div>
                     <div class="upload-file"></div>
                 </div>
-                <div class="error-tooltip hidden">Please select a CSV file</div>
+                <div class="error-tooltip hidden display-none">Please select a CSV file</div>
             </div>
         </div>
         <div class="step" id="step-2">
@@ -56,7 +56,7 @@
                     </div>
                     <div class="upload-file"></div>
                 </div>
-                <div class="error-tooltip hidden">Please upload an Excel spreadsheet</div>
+                <div class="error-tooltip hidden display-none">Please upload an Excel spreadsheet</div>
             </div>
         </div>
         <div class="step" id="step-3">
@@ -86,8 +86,11 @@
             async function flashErrorTooltip(tooltip, error) {
                 tooltip.textContent = error;
                 tooltip.classList.remove('hidden');
+                tooltip.classList.remove('display-none');
                 await sleep(3000);
                 tooltip.classList.add('hidden');
+                await sleep(3000);
+                tooltip.classList.add('display-none');
             }
 
             csvInput.ondrop = function (e) {

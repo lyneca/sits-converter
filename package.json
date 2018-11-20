@@ -1,6 +1,6 @@
 {
   "name": "sits-converter",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Convert Canvas marks to SITS format",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,8 @@
     "csvtojson": "^2.0.8",
     "eslint": "^5.8.0",
     "node-excel-export": "^1.4.4",
-    "read-excel-file": "^2.0.5"
+    "read-excel-file": "^2.0.5",
+    "xlsx": "^0.14.1"
   },
   "devDependencies": {
     "electron": "^3.0.8",

@@ -1,14 +1,15 @@
 const fs = require('fs');
 const csv = require('csvtojson');
 const excel = require('node-excel-export');
+const xlsx = require('xlsx');
 var readXlsxFile = require('read-excel-file/node');
 
 var csvFile;
 var sitsFile;
 
 function getGrade(mark) {
-    if (mark < 50) return "FA";
-    if (mark < 65) return "PA";
+    if (mark < 50) return "";
+    if (mark < 65) return "PS";
     if (mark < 75) return "CR";
     if (mark < 85) return "DI";
     return "HD"
@@ -46,17 +47,20 @@ function process(csvFile, sitsFile) {
         });
         readXLSX(sitsFile).then((excelLines) => {
             excelLines.shift();
-            output = exportXSLX(combine(jsonObj, excelLines));
+            output_csv = exportCSV(combine(jsonObj, excelLines));
+            output_xlsx = exportXSLX(combine(jsonObj, excelLines));
             var outputPath = dialog.showSaveDialog({
                 filters: [
-                    { name: 'Excel Spreadsheets', extensions: ['xlsx'] }
+                    { name: 'CSV Files', extensions: ['csv'] }
                 ],
             });
             if (!outputPath) return;
-            fs.writeFile(outputPath, output, (err) => {
+            fs.writeFile(outputPath, output_csv, (err) => {
                 if (err) throw err;
             });
-        })
+            var xlsxFile = outputPath.split('.').slice(0, -1).join('.') + '-DISPLAY.xlsx';
+            xlsx.writeFile(output_xlsx, xlsxFile);
+        });
     });
 }
 
@@ -88,17 +92,103 @@ function combine(csv, sits) {
     });
     csv.forEach((val) => {
         var sid = val["SIS User ID"];
-        keyedCSV[sid].grade = getGrade(val["Final Score"]);
-        keyedCSV[sid].mark = parseFloat(val["Final Score"]);
+        keyedCSV[sid].grade = getGrade(Math.round(val["Final Score"]));
+        keyedCSV[sid].mark = Math.round(parseFloat(val["Final Score"]));
     });
     return keyedCSV;
 }
 
+function exportCSV(combinedJSON) {
+    var csv = [];
+    csv.push(columns.map(a => specification[a].displayName).map(a => /,/.test(a) ? '"' + a + '"' : a));
+    Object.values(combinedJSON).forEach(item => {
+        var row = [];
+        columns.forEach(col => {
+            row.push(/,/.test(item[col]) ? '"' + item[col] + '"' : item[col]);
+        });
+        csv.push(row);
+    });
+    return csv.join('\n');
+}
+
 function exportXSLX(combinedJSON) {
-    return excel.buildExport([{
+    var excel_file = excel.buildExport([{
         specification: specification,
         data: Object.values(combinedJSON)
     }]);
+    var workbook = xlsx.read(excel_file);
+    var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    worksheet['!ref'] = worksheet['!ref'].replace('T', 'AA');
+    worksheet['V1'] = {t:'s', v:'Grade'};
+    worksheet['V2'] = {t:'s', v:'HD'};
+    worksheet['V3'] = {t:'s', v:'DI'};
+    worksheet['V4'] = {t:'s', v:'CR'};
+    worksheet['V5'] = {t:'s', v:'PS'};
+    worksheet['V6'] = {t:'s', v:'FA'};
+    worksheet['V7'] = {t:'s', v:'AF'};
+    worksheet['V8'] = {t:'s', v:'IC'};
+    worksheet['V9'] = {t:'s', v:'RI'};
+
+    worksheet['W1'] = {t:'s', v:'Mark'};
+    worksheet['W2'] = {t:'s', v:'85-100'};
+    worksheet['W3'] = {t:'s', v:'75-84'};
+    worksheet['W4'] = {t:'s', v:'65-74'};
+    worksheet['W5'] = {t:'s', v:'50-64'};
+    worksheet['W6'] = {t:'s', v:'0-49'};
+    worksheet['W7'] = {t:'s', v:'0-49'};
+    worksheet['W8'] = {t:'s', v:'0-100'};
+    worksheet['W9'] = {t:'s', v:'0-100'};
+
+    worksheet['X1'] = {t:'s', v:'Description'};
+    worksheet['X2'] = {t:'s', v:'High Distinction'};
+    worksheet['X3'] = {t:'s', v:'Distinction'};
+    worksheet['X4'] = {t:'s', v:'Credit'};
+    worksheet['X5'] = {t:'s', v:'Pass'};
+    worksheet['X6'] = {t:'s', v:'Fail'};
+    worksheet['X7'] = {t:'s', v:'Absent Fail'};
+    worksheet['X8'] = {t:'s', v:'Incomplete'};
+    worksheet['X9'] = {t:'s', v:'Long Term Incomplete'};
+    worksheet['Y1'] = {t:'s', v:'Students Receiving Each Grade'};
+    worksheet['Y2'] = {f:'COUNTIF(K:K,V2)'};
+    worksheet['Y3'] = {f:'COUNTIF(K:K,V3)'};
+    worksheet['Y4'] = {f:'COUNTIF(K:K,V4)'};
+    worksheet['Y5'] = {f:'COUNTIF(K:K,V5)'};
+    worksheet['Y6'] = {f:'COUNTIF(K:K,V6)'};
+    worksheet['Y7'] = {f:'COUNTIF(K:K,V7)'};
+    worksheet['Y8'] = {f:'COUNTIF(K:K,V8)'};
+    worksheet['Y9'] = {f:'COUNTIF(K:K,V9)'};
+
+    worksheet['AA1'] = {t:'s', v:'Percentage'};
+    worksheet['AA2'] = {f:'Y2/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA3'] = {f:'Y3/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA4'] = {f:'Y4/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA5'] = {f:'Y5/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA6'] = {f:'Y6/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA7'] = {f:'Y7/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA8'] = {f:'Y8/SUM($Y$2:$Y$9)', z:'0%'};
+    worksheet['AA9'] = {f:'Y9/SUM($Y$2:$Y$9)', z:'0%'};
+
+    worksheet['X11'] = {t:'s', v:'(all marks)'};
+    worksheet['X12'] = {t:'s', v:'(excluding "0" marks)'};
+    worksheet['X13'] = {t:'s', v:'(excluding "0" marks)'};
+
+    worksheet['Y11'] = {t:'s', v:'Mean mark ='};
+    worksheet['Y12'] = {t:'s', v:'Mean mark ='};
+    worksheet['Y13'] = {t:'s', v:'Mean Grade = '};
+
+    worksheet['Z11'] = {f:'AVERAGE(J2:J200)'};
+    worksheet['Z12'] = {f:'AVERAGEIF(J1:J199,">0")'};
+    worksheet['Z13'] = {t:'s', v:'Mean Grade = '};
+
+    worksheet['AA11'] = {f:'ROUND(Z11,0)'};
+    worksheet['AA12'] = {f:'ROUND(Z12,0)'};
+    worksheet['AA13'] = {f:'IF(AA12>84,"HD",IF(AA12>74,"DI",IF(AA12>64,"CR",IF(AA12>49,"PS",IF(AA12<49,"FA")))))'};
+
+
+    workbook.Sheets[workbook.SheetNames[0]] = worksheet;
+
+    console.log(workbook);
+    return workbook;
 }
 
 const specification = {
@@ -201,5 +291,7 @@ const specification = {
         displayName: "Mark scheme",
         headerStyle: {},
         width: 120
-    },
+    }
 }
+
+columns = ["year", "period", "uos", "occ", "map", "ass", "cand_key", "name", "hash_cd", "mark", "grade", "cd", "cand_key_2", "student_id", "first_name", "second_name", "surname", "uos", "assessment_type", "mark_scheme"]

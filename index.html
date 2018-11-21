@@ -88,6 +88,7 @@
                 tooltip.textContent = error;
                 tooltip.classList.remove('hidden');
                 tooltip.classList.remove('display-none');
+                tooltip.parentElement.classList.add('error');
                 await sleep(timeout);
                 tooltip.classList.add('hidden');
                 await sleep(timeout);
@@ -140,6 +141,7 @@
 
             function visualHandler(element, fileName) {
                 element.classList.remove("dragover")
+                element.classList.remove('error');
                 element.classList.add("uploaded");
                 element.children[0].children[0].src = "check.png"
                 element.children[0].children[1].textContent = "Success! File upload complete.";
@@ -182,10 +184,7 @@
             };
 
             button.onclick = () => {
-                sitsInput.classList.remove("uploaded");
-                csvInput.classList.remove("uploaded");
                 if (csvFile && sitsFile) process(csvFile, sitsFile);
-                reset();
             }
 
             var body = document.getElementsByTagName('body')[0];
@@ -208,17 +207,13 @@
             }
 
             function reset() {
+                csvInput.classList.remove("uploaded");
+                sitsInput.classList.remove("uploaded");
                 nextBox = csvInput;
                 csvFile = null;
                 sitsFile = null;
                 disableStep(2);
                 disableStep(3);
-                csvInput.children[0].children[0].src = "upload.png"
-                csvInput.children[0].children[1].textContent = "Drag the file straight into this box";
-                csvInput.children[0].children[2].textContent = "No file uploaded";
-                sitsInput.children[0].children[0].src = "upload.png"
-                sitsInput.children[0].children[1].textContent = "Complete the above step first";
-                sitsInput.children[0].children[2].textContent = "No file uploaded";
             }
         </script>
         <script src="script.js"></script>

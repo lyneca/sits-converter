@@ -247,6 +247,7 @@ div.step.disabled div.button#merge-button {
 }
 
 div.error-tooltip {
+    cursor: default;
     position: absolute;
     color: #828282;
     display: inline-block;

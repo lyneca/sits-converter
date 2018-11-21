@@ -39,8 +39,15 @@ function readXLSX(path) {
 }
 
 function process(csvFile, sitsFile) {
-    if (!csvFile.endsWith('.csv'));
     readCSV(csvFile).then((jsonObj) => {
+        if (Object.keys(jsonObj[0]).indexOf("SIS User ID") < 0) {
+            flashErrorTooltip(csvInput.children[1], "Invalid CSV File (missing SIS User ID column)");
+            return;
+        }
+        if (Object.keys(jsonObj[0]).indexOf("Final Score") < 0) {
+            flashErrorTooltip(csvInput.children[1], "Invalid CSV File (missing Final Score column)");
+            return;
+        }
         jsonObj.shift();
         jsonObj = jsonObj.filter((student) => {
             return student["SIS User ID"] != "";

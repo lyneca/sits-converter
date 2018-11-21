@@ -83,13 +83,14 @@
             var button = document.getElementById('merge-button');
             var nextBox = csvInput;
 
-            async function flashErrorTooltip(tooltip, error) {
+            async function flashErrorTooltip(tooltip, error, timeout) {
+                if (timeout == null) timeout = 10000;
                 tooltip.textContent = error;
                 tooltip.classList.remove('hidden');
                 tooltip.classList.remove('display-none');
-                await sleep(3000);
+                await sleep(timeout);
                 tooltip.classList.add('hidden');
-                await sleep(3000);
+                await sleep(timeout);
                 tooltip.classList.add('display-none');
             }
 
